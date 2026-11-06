@@ -1,0 +1,42 @@
+// The screen's header band: the plugin's name and which edition this is. F3
+// has no tab bar.
+
+.ghostlabs-glide-screen__header {
+	display: flex;
+	align-items: center;
+	gap: var(--ghostlabs-glide-upsell-space-3);
+	// Full-bleed across the content column: reach past `.wrap`'s margin and
+	// `#wpcontent`'s padding, then give the same distance back as padding.
+	margin-block: calc(var(--ghostlabs-glide-upsell-wp-wrap-top) * -1) 0;
+	margin-inline: calc(var(--ghostlabs-glide-upsell-wp-wrap-left) * -1) calc(var(--ghostlabs-glide-upsell-wp-wrap-right) * -1);
+	padding-block: var(--ghostlabs-glide-upsell-space-5) var(--ghostlabs-glide-upsell-space-4);
+	padding-inline: var(--ghostlabs-glide-upsell-wp-wrap-left) var(--ghostlabs-glide-upsell-wp-wrap-right);
+	border-block-end: var(--ghostlabs-glide-upsell-hairline) solid var(--ghostlabs-glide-upsell-border);
+	background: var(--ghostlabs-glide-upsell-surface);
+}
+
+// ⚠️ Two classes on purpose: core's `.wrap h1` is (0,1,1), and a single class
+// loses to it silently: the rule applies and is overruled.
+.ghostlabs-glide-screen .ghostlabs-glide-screen__title {
+	margin: 0;
+	padding: 0;
+	font-size: var(--ghostlabs-glide-upsell-text-title);
+	font-weight: 700;
+	line-height: var(--ghostlabs-glide-upsell-leading-tight);
+	color: var(--ghostlabs-glide-upsell-wp-ink);
+}
+
+// ⚠️ gray-600, not the mock's gray-500: gray-500 on gray-100 measured 4.39:1
+// in Undercard's axe pass, under 4.5 for 10px text. gray-600 is 6.87:1, and
+// the E2E spec measures it.
+.ghostlabs-glide-screen__badge {
+	padding: var(--ghostlabs-glide-upsell-space-1) var(--ghostlabs-glide-upsell-space-2);
+	border-radius: var(--ghostlabs-glide-upsell-radius-card);
+	background: var(--ghostlabs-glide-upsell-rule);
+	font-size: var(--ghostlabs-glide-upsell-text-2xs);
+	font-weight: 700;
+	letter-spacing: var(--ghostlabs-glide-upsell-tracking-caps);
+	line-height: var(--ghostlabs-glide-upsell-leading-tight);
+	text-transform: uppercase;
+	color: var(--ghostlabs-glide-upsell-muted-strong);
+}

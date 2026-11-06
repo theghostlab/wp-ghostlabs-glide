@@ -1,0 +1,93 @@
+// Glide Slide - Base styles
+
+@use "patterns/testimonial";
+
+.ghostlabs-glide-slide {
+	position: relative;
+	overflow: hidden;
+}
+
+.ghostlabs-glide-slide__video-background {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: var(--ghostlabs-glide-slide-fit, cover);
+	z-index: 0;
+	pointer-events: none;
+}
+
+.ghostlabs-glide-slide__video-background--embed,
+.ghostlabs-glide-slide__video-background--oembed {
+	border: 0;
+}
+
+.ghostlabs-glide-slide__video-background--oembed {
+	display: flex;
+
+	iframe {
+		width: 100%;
+		height: 100%;
+		border: 0;
+	}
+}
+
+.ghostlabs-glide-slide__embed-controls {
+	position: absolute;
+	bottom: 12px;
+	left: 12px;
+	z-index: 2;
+	display: flex;
+	gap: 4px;
+}
+
+.ghostlabs-glide-slide__embed-control {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	padding: 0;
+	margin: 0;
+	background: rgba(0, 0, 0, 0.6);
+	border: 0;
+	border-radius: 4px;
+	cursor: pointer;
+	color: #fff;
+	backdrop-filter: blur(4px);
+	transition: background-color 0.2s ease;
+
+	&:hover {
+		background: rgba(0, 0, 0, 0.8);
+	}
+
+	// Dual ring: a white-only outline vanished over a light video frame.
+	&:focus-visible {
+		outline: 2px solid transparent;
+		box-shadow: 0 0 0 2px #fff, 0 0 0 4px #000;
+	}
+
+	.ghostlabs-glide-slide__embed-icon {
+		display: none;
+	}
+
+	&[data-action="playPause"][data-state="playing"]
+	.ghostlabs-glide-slide__embed-icon--pause {
+		display: block;
+	}
+
+	&[data-action="playPause"][data-state="paused"]
+	.ghostlabs-glide-slide__embed-icon--play {
+		display: block;
+	}
+
+	&[data-action="mute"][data-state="muted"]
+	.ghostlabs-glide-slide__embed-icon--muted {
+		display: block;
+	}
+
+	&[data-action="mute"][data-state="unmuted"]
+	.ghostlabs-glide-slide__embed-icon--unmuted {
+		display: block;
+	}
+}

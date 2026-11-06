@@ -1,0 +1,799 @@
+// Content Slider Mode - Frontend Styles
+
+.ghostlabs-glide--content-slider {
+	--ghostlabs-glide-slide-height: 60vh;
+	--ghostlabs-glide-slide-fit: cover;
+	--ghostlabs-glide-slide-justify: center;
+	// Keep the unit: this length is substituted into subtraction calc()
+	// (e.g. slide flex-basis below); calc(100% - 0) is invalid, 100% - 0px
+	// is valid. The length-zero-no-unit rule is disabled for this reason.
+	--ghostlabs-glide-gap: 0px;
+	--ghostlabs-glide-slides-per-view: 1;
+	--ghostlabs-slide-count: 1;
+	--ghostlabs-slide-size: 100%;
+
+	-webkit-tap-highlight-color: transparent;
+	position: relative;
+	margin: auto;
+	overflow: hidden;
+
+	// The container is tabindex="0" for keyboard nav, which makes Safari
+	// paint a thick default focus ring on click/tap. Suppress it for
+	// pointer focus but keep a visible ring for keyboard focus.
+	&:focus {
+		outline: none;
+	}
+
+	// Dual-ring focus indicator: white halo + dark outline. Stays visible
+	// against any slide background (light, dark, or photographic) and
+	// meets the WCAG 2.4.11 3:1 contrast ratio from at least one side.
+	&:focus-visible {
+		outline: none;
+		box-shadow: 0 0 0 2px #fff, 0 0 0 4px #000;
+	}
+
+	// `clip` where supported: a hidden box can still be scrolled
+	// programmatically, so focus landing in an off-screen slide could add a
+	// scrollLeft that fights Embla's transform. Embla moves the track with
+	// transforms and never needs the box to scroll.
+	.ghostlabs-glide__viewport {
+		overflow: hidden;
+		overflow: clip;
+	}
+
+	.ghostlabs-glide__track {
+		display: flex;
+		margin-left: calc(var(--ghostlabs-glide-gap, 0px) * -1);
+		backface-visibility: hidden;
+		touch-action: pan-y pinch-zoom;
+	}
+
+	// ⚠️ `content-box`, declared. The gap is the slide's padding, cancelled by
+	// the track's negative margin, and the flex basis subtracts it — arithmetic
+	// that only holds when padding sits outside the basis. A theme's global
+	// `* { box-sizing: border-box }` would otherwise leave a gap-wide strip of
+	// the next slide showing at rest.
+	.ghostlabs-glide-slide {
+		box-sizing: content-box;
+		padding-left: var(--ghostlabs-glide-gap, 0px);
+		min-width: 0;
+		flex: 0 0 calc(var(--ghostlabs-slide-size, 100%) / var(--ghostlabs-glide-slides-per-view, 1) - var(--ghostlabs-glide-gap, 0px));
+
+
+		> .wp-block-cover {
+			min-height: 100%;
+		}
+
+		//Normalize img tag styles in content-slider mode
+		img {
+			width: 100%;
+			height: auto;
+			//object-fit: cover;
+			object-fit: var(--ghostlabs-glide-slide-fit, cover);
+			display: block;
+		}
+	}
+
+	// Arrows
+	.ghostlabs-glide__arrow {
+		position: absolute;
+		top: 50%;
+		z-index: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 40px;
+		height: 40px;
+		padding: 0;
+		margin: 0;
+		// The disc is always light, so the icon is always dark — inheriting the
+		// theme's button colour put white icons on it in some themes.
+		color: #1e1e1e;
+		background: rgba(255, 255, 255, 0.9);
+		border: 1px solid rgba(0, 0, 0, 0.1);
+		border-radius: 50%;
+		cursor: pointer;
+		transform: translateY(-50%);
+		transition: opacity 0.2s ease, background-color 0.2s ease;
+		backdrop-filter: blur(4px);
+
+		&:hover {
+			background: rgba(255, 255, 255, 1);
+		}
+
+		// Dual ring, as on the container: stays visible over any photograph.
+		&:focus-visible {
+			outline: 2px solid transparent;
+			box-shadow: 0 0 0 2px #fff, 0 0 0 4px #000;
+		}
+
+		// aria-disabled rather than disabled, so focus stays on the button.
+		&[aria-disabled="true"] {
+			opacity: 0.3;
+			cursor: default;
+		}
+
+		// Rendered only when nothing else on the page can change slides:
+		// visually hidden until it takes keyboard focus, then shown as normal.
+		&--focus-only:not(:focus) {
+			width: 1px;
+			height: 1px;
+			overflow: hidden;
+			clip-path: inset(50%);
+			border: 0;
+			opacity: 0;
+		}
+
+		&--prev {
+			left: 12px;
+		}
+
+		&--next {
+			right: 12px;
+		}
+
+		svg {
+			width: 20px;
+			height: 20px;
+		}
+	}
+
+	// Dots
+	.ghostlabs-glide__dots {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0;
+		padding: 4px 0;
+	}
+
+	// The button is the 24×24 target (WCAG 2.5.8) and the dot is drawn inside
+	// it. The ring is the full text colour, so it meets 3:1 on the page it sits
+	// on whatever that is (WCAG 1.4.11); the active dot is filled, so the state
+	// is not carried by colour alone.
+	.ghostlabs-glide__dot {
+		display: grid;
+		place-items: center;
+		width: 24px;
+		height: 24px;
+		padding: 0;
+		border: 0;
+		border-radius: 50%;
+		background: transparent;
+		color: inherit;
+		cursor: pointer;
+
+		&::before {
+			content: "";
+			width: 10px;
+			height: 10px;
+			box-sizing: border-box;
+			border: 1.5px solid currentcolor;
+			border-radius: 50%;
+			background: transparent;
+			transition: background-color 0.2s ease, transform 0.2s ease;
+		}
+
+		&:hover::before {
+			background: color-mix(in srgb, currentcolor 35%, transparent);
+		}
+
+		&:focus-visible {
+			outline: 2px solid transparent;
+			box-shadow: 0 0 0 2px #fff, 0 0 0 4px #000;
+		}
+
+		&.is-active::before {
+			background: currentcolor;
+			transform: scale(1.2);
+		}
+	}
+
+	// Progress Bar
+	.ghostlabs-glide__progress {
+		height: 3px;
+		background: rgba(0, 0, 0, 0.1);
+		overflow: hidden;
+		margin-top: 8px;
+	}
+
+	.ghostlabs-glide__progress-bar {
+		height: 100%;
+		background: currentcolor;
+		transform-origin: left;
+		transform: scaleX(0);
+		will-change: transform;
+	}
+
+	// Pause/play toggle (autoplay only)
+	.ghostlabs-glide__pause {
+		position: absolute;
+		top: 12px;
+		right: 12px;
+		z-index: 2;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 36px;
+		height: 36px;
+		padding: 0;
+		margin: 0;
+		background: rgba(255, 255, 255, 0.9);
+		border: 1px solid rgba(0, 0, 0, 0.1);
+		border-radius: 50%;
+		cursor: pointer;
+		// Always dark on the always-light disc (see the arrows).
+		color: #1e1e1e;
+		backdrop-filter: blur(4px);
+		transition: background-color 0.2s ease;
+
+		&:hover {
+			background: rgba(255, 255, 255, 1);
+		}
+
+		&:focus-visible {
+			outline: 2px solid transparent;
+			box-shadow: 0 0 0 2px #fff, 0 0 0 4px #000;
+		}
+
+		.ghostlabs-glide__pause-icon {
+			display: none;
+		}
+
+		&[data-state="playing"] .ghostlabs-glide__pause-icon--pause {
+			display: block;
+		}
+
+		&[data-state="paused"] .ghostlabs-glide__pause-icon--play {
+			display: block;
+		}
+	}
+
+	// State: ready
+	&.is-ready .ghostlabs-glide__viewport {
+		cursor: grab;
+	}
+
+	&.is-dragging .ghostlabs-glide__viewport {
+		cursor: grabbing;
+	}
+
+	.ghostlabs-glide-slide > figure.wp-block-image img,
+	.ghostlabs-glide-slide > .wp-block-video video,
+	.ghostlabs-glide-slide .wp-block-cover__image-background,
+	.ghostlabs-glide-slide .wp-block-cover__video-background,
+	.ghostlabs-glide-slide .ghostlabs-glide-slide__video-background {
+		width: 100%;
+		height: 100%;
+		object-fit: var(--ghostlabs-glide-slide-fit, cover);
+	}
+}
+
+// Fixed slide height with configurable vertical alignment and media fit
+.ghostlabs-glide-slide {
+	height: var(--ghostlabs-glide-slide-height, 60vh);
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	justify-content: var(--ghostlabs-glide-slide-justify, center);
+
+	> .wp-block-cover {
+		align-items: var(--ghostlabs-glide-slide-justify, center);
+	}
+}
+
+// Per-breakpoint responsive heights: override the single slide-height
+// variable with desktop / tablet / mobile CSS vars behind media queries.
+.ghostlabs-glide--content-slider.is-responsive-height .ghostlabs-glide-slide {
+	height: var(--ghostlabs-glide-height-desktop, 600px);
+}
+
+@media (max-width: 1024px) {
+
+	.ghostlabs-glide--content-slider.is-responsive-height .ghostlabs-glide-slide {
+		height: var(--ghostlabs-glide-height-tablet, 450px);
+	}
+}
+
+@media (max-width: 600px) {
+
+	.ghostlabs-glide--content-slider.is-responsive-height .ghostlabs-glide-slide {
+		height: var(--ghostlabs-glide-height-mobile, 300px);
+	}
+}
+
+// Auto height: drop the fixed slide height. The flex track's default
+// align-items: stretch makes every slide equalize to the tallest one's
+// natural content height — at every viewport, with no JS measurement.
+.ghostlabs-glide--content-slider.is-auto-height .ghostlabs-glide-slide {
+	height: auto;
+
+	// Cover blocks set min-height:100% via inline style, which resolves
+	// to 0 when the parent is height:auto. Replace the percentage with
+	// a viewport-relative fallback so Cover slides stay visible.
+	> .wp-block-cover {
+		min-height: 60vh !important;
+	}
+}
+
+// ⚠️ **Above the breakpoint the arrows stay over the slides, so the slides'
+// text keeps clear of them.** A full-width Cover puts its heading about 22px
+// from the edge, and the 40px arrow 12px in covered its first letter (WCAG
+// 1.4.10/1.4.3, measured at 1280px). The clearance goes on the text, never on
+// the slide: a Cover's background and a full-bleed image keep their width.
+@media (min-width: 782px) {
+
+	.ghostlabs-glide--content-slider:has(> .ghostlabs-glide__arrow:not(.ghostlabs-glide__arrow--focus-only)) .ghostlabs-glide-slide {
+
+		.wp-block-cover__inner-container,
+		> :is(p, h1, h2, h3, h4, h5, h6, blockquote, .wp-block-quote, .wp-block-group) {
+			padding-inline: 44px;
+		}
+	}
+}
+
+// ⚠️ **On a narrow screen the arrows move under the slides.** A slide's text
+// reaches its edges there, and arrows laid over the slide covered the first and
+// last words of every line they crossed (WCAG 1.4.10, measured at 640px — 1280
+// at 200% zoom — on the testimonial). Room is reserved below everything else,
+// and the arrows sit in its corners. `top` is forced because the thumbnail
+// alignment helper writes it inline.
+@media (max-width: 781px) {
+
+	.ghostlabs-glide--content-slider:has(> .ghostlabs-glide__arrow:not(.ghostlabs-glide__arrow--focus-only)) {
+		padding-bottom: 52px;
+	}
+
+	.ghostlabs-glide--content-slider > .ghostlabs-glide__arrow:not(.ghostlabs-glide__arrow--focus-only) {
+		top: auto !important;
+		bottom: 6px;
+		transform: none;
+	}
+}
+
+// ⚠️ **Short screens drop the fixed height** (owner's decision, 2026-10-30). At
+// 400% zoom a 60vh slide is about 150px tall and `overflow: hidden` cut its
+// heading and citation away with no way to scroll to them — content lost at
+// the zoom WCAG 1.4.10 requires, in the shipped Testimonial pattern. Below
+// this height every slider behaves as Auto height: each slide is as tall as its
+// content, and the track equalises them. Fade's JS stacking is overridden too,
+// because it pins slides absolutely against a height that no longer exists.
+@media (max-height: 600px) {
+
+	.ghostlabs-glide--content-slider .ghostlabs-glide-slide,
+	.ghostlabs-glide--content-slider.is-responsive-height .ghostlabs-glide-slide {
+		height: auto;
+		overflow: visible;
+
+		> .wp-block-cover {
+			min-height: 60vh !important;
+		}
+	}
+
+	.ghostlabs-glide--content-slider.is-tween-fade {
+
+		.ghostlabs-glide__viewport,
+		.ghostlabs-glide__track {
+			height: auto !important;
+		}
+
+		.ghostlabs-glide__track {
+			display: grid;
+			grid-template-columns: 1fr;
+		}
+
+		.ghostlabs-glide-slide {
+			grid-area: 1 / 1;
+			position: relative !important;
+			inset: auto !important;
+		}
+	}
+}
+
+// Fade + auto: setupFade() in index.js skips position: absolute when
+// is-auto-height is on, so the absolute stack would collapse the track.
+// Replace it with a CSS grid stack — all slides share grid cell 1/1, so
+// the track sizes to the tallest. JS still toggles opacity for the fade.
+.ghostlabs-glide--content-slider.is-auto-height.is-tween-fade {
+
+	.ghostlabs-glide__track {
+		display: grid;
+		grid-template-columns: 1fr;
+		height: auto;
+	}
+
+	.ghostlabs-glide-slide {
+		grid-area: 1 / 1;
+	}
+}
+
+.ghostlabs-glide--content-slider:has(.ghostlabs-glide-overlay) {
+
+	.ghostlabs-glide__pause,
+	.ghostlabs-glide__arrow,
+	.ghostlabs-glide__dots,
+	.ghostlabs-glide__progress {
+		z-index: 4;
+	}
+}
+
+.ghostlabs-glide--content-slider.is-auto-hide-controls {
+
+	.ghostlabs-glide__arrow,
+	.ghostlabs-glide__dots,
+	.ghostlabs-glide__progress,
+	.ghostlabs-glide__pause,
+	.ghostlabs-glide__thumbs {
+		opacity: 0;
+		transition: opacity 0.3s ease;
+	}
+
+	&:hover,
+	&:focus-within {
+
+		.ghostlabs-glide__arrow,
+		.ghostlabs-glide__dots,
+		.ghostlabs-glide__progress,
+		.ghostlabs-glide__pause,
+		.ghostlabs-glide__thumbs {
+			opacity: 1;
+		}
+	}
+}
+
+.ghostlabs-glide--content-slider {
+
+	--ghostlabs-glide-dots-height: 0px; // unit required: used in calc(100% - …)
+
+	.ghostlabs-glide-overlay > .ghostlabs-glide-overlay__content {
+		display: grid;
+		grid-template-rows: calc(100% - var(--ghostlabs-glide-dots-height));
+
+		> div {
+			margin: 0;
+		}
+	}
+}
+
+// Full-width alignment: break out of padded parent containers
+.ghostlabs-glide--content-slider.alignfull {
+	width: 100vw;
+	max-width: 100vw;
+	margin-left: calc(50% - 50vw);
+	margin-right: calc(50% - 50vw);
+}
+
+// Fade mode: slides get position: absolute (when looping) via JS, which
+// collapses the flex track. Mirror the slide height onto the
+// track/viewport so the slider still renders. Opacity is set discretely
+// by JS (1 for selected, 0 for others); the transition here is what
+// produces the cross-fade.
+.ghostlabs-glide--content-slider.is-tween-fade {
+
+	.ghostlabs-glide__viewport,
+	.ghostlabs-glide__track {
+		height: var(--ghostlabs-glide-slide-height, 60vh);
+	}
+
+	.ghostlabs-glide-slide {
+		transition: opacity 0.5s ease;
+	}
+}
+
+// Fade + responsive height: mirror breakpoint-aware heights onto
+// track/viewport.
+.ghostlabs-glide--content-slider.is-responsive-height.is-tween-fade {
+
+	.ghostlabs-glide__viewport,
+	.ghostlabs-glide__track {
+		height: var(--ghostlabs-glide-height-desktop, 600px);
+	}
+}
+
+@media (max-width: 1024px) {
+
+	.ghostlabs-glide--content-slider.is-responsive-height.is-tween-fade {
+
+		.ghostlabs-glide__viewport,
+		.ghostlabs-glide__track {
+			height: var(--ghostlabs-glide-height-tablet, 450px);
+		}
+	}
+}
+
+@media (max-width: 600px) {
+
+	.ghostlabs-glide--content-slider.is-responsive-height.is-tween-fade {
+
+		.ghostlabs-glide__viewport,
+		.ghostlabs-glide__track {
+			height: var(--ghostlabs-glide-height-mobile, 300px);
+		}
+	}
+}
+
+// Fade + loop: Embla's track is N× viewport wide and horizontally translated.
+// Combined with the JS-applied position:absolute + inset:0 on each slide, that
+// would stretch every slide to N× the viewport and keep only the left slice
+// visible. Pin the track to the viewport width and suppress Embla's transform
+// so the stacked slides occupy exactly the viewport. Embla's internal scroll
+// progress still updates, which is what the JS opacity fade reads.
+.ghostlabs-glide--content-slider.is-tween-fade.is-loop {
+
+	.ghostlabs-glide__track {
+		width: 100% !important;
+		transform: none !important;
+	}
+
+	// Embla's slideLooper applies per-slide transforms to reposition slides for
+	// the infinite-scroll illusion. When looping forward, slide 0 is briefly
+	// translated offscreen ahead of the last slide, so its 0 → 1 opacity
+	// transition runs while invisible and the slide appears to "blink" in when
+	// Embla teleports it back. Pin slide transforms to none so the stack stays
+	// put and only opacity animates.
+	.ghostlabs-glide-slide {
+		//transform: none !important;
+	}
+}
+
+// ── Thumbnails ──
+
+.ghostlabs-glide__thumbs {
+	position: relative;
+	overflow: hidden;
+}
+
+.ghostlabs-glide__thumbs__viewport {
+	overflow: hidden;
+	height: 100%;
+}
+
+.ghostlabs-glide__thumbs__track {
+	display: flex;
+	backface-visibility: hidden;
+	touch-action: pan-y pinch-zoom;
+}
+
+.ghostlabs-glide__thumbs__slide {
+	flex: 0 0 20%;
+	min-width: 0;
+	padding: 4px;
+	cursor: pointer;
+	opacity: 0.5;
+	transition: opacity 0.2s ease;
+
+	&:hover {
+		opacity: 0.8;
+	}
+
+	&.is-thumb-selected {
+		opacity: 1;
+	}
+
+	button {
+		display: flex;
+		align-items: center;
+		width: 100%;
+		height: inherit;
+		padding: 0;
+		margin: 0;
+		border: 2px solid transparent;
+		border-radius: 4px;
+		background: none;
+		cursor: pointer;
+		overflow: hidden;
+		transition: border-color 0.2s ease;
+	}
+
+	&.is-thumb-selected button {
+		border-color: currentcolor;
+	}
+
+	button:focus-visible {
+		outline: none;
+		box-shadow: 0 0 0 2px #fff, 0 0 0 4px #000;
+	}
+
+	img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: center;
+		display: block;
+		aspect-ratio: 16 / 9;
+	}
+}
+
+.ghostlabs-glide__thumbs__placeholder {
+	display: grid;
+	place-items: center;
+	width: 100%;
+	aspect-ratio: 16 / 9;
+	background: rgba(0, 0, 0, 0.05);
+	border-radius: 2px;
+	font-size: 14px;
+	font-weight: 600;
+	color: rgba(0, 0, 0, 0.65);
+}
+
+// 30% min-height for bottom/top thumbnails
+.ghostlabs-glide--content-slider.has-thumbnails--bottom .ghostlabs-glide__thumbs,
+.ghostlabs-glide--content-slider.has-thumbnails--top .ghostlabs-glide__thumbs {
+	--max-height: calc(var(--ghostlabs-glide-slide-height, 60vh) * 0.26);
+
+	button {
+		max-height: var(--max-height);
+	}
+}
+
+.ghostlabs-glide--content-slider.has-thumbnails--bottom.is-responsive-height .ghostlabs-glide__thumbs,
+.ghostlabs-glide--content-slider.has-thumbnails--top.is-responsive-height .ghostlabs-glide__thumbs {
+	//max-height: calc(var(--ghostlabs-glide-height-desktop, 600px) * 0.4);
+	--max-height: calc(var(--ghostlabs-glide-height-desktop, 600px) * 0.4);
+}
+
+@media (max-width: 1024px) {
+
+	.ghostlabs-glide--content-slider.has-thumbnails--bottom.is-responsive-height .ghostlabs-glide__thumbs,
+	.ghostlabs-glide--content-slider.has-thumbnails--top.is-responsive-height .ghostlabs-glide__thumbs {
+		//max-height: calc(var(--ghostlabs-glide-height-tablet, 450px) * 0.4);
+		--max-height: calc(var(--ghostlabs-glide-height-tablet, 450px) * 0.4);
+	}
+}
+
+@media (max-width: 600px) {
+
+	.ghostlabs-glide--content-slider.has-thumbnails--bottom.is-responsive-height .ghostlabs-glide__thumbs,
+	.ghostlabs-glide--content-slider.has-thumbnails--top.is-responsive-height .ghostlabs-glide__thumbs {
+		--max-height: calc(var(--ghostlabs-glide-height-mobile, 300px) * 0.3);
+	}
+}
+
+.ghostlabs-glide--content-slider.has-thumbnails.is-auto-height .ghostlabs-glide__thumbs {
+	min-height: 120px;
+}
+
+// Top position: flex column so order: -1 moves thumbs above viewport
+.ghostlabs-glide--content-slider.has-thumbnails--top {
+	display: flex;
+	flex-direction: column;
+
+	.ghostlabs-glide__thumbs {
+		order: -1;
+	}
+}
+
+// Left/right positions: CSS Grid side-by-side layout
+.ghostlabs-glide--content-slider.has-thumbnails--left,
+.ghostlabs-glide--content-slider.has-thumbnails--right {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+
+	.ghostlabs-glide__viewport {
+		grid-column: 2;
+		grid-row: 1;
+	}
+
+	.ghostlabs-glide__thumbs {
+		grid-column: 1;
+		grid-row: 1;
+		min-height: unset;
+		width: calc(var(--ghostlabs-glide-slide-height, 60vh) * 0.3);
+		max-width: 200px;
+	}
+
+	.ghostlabs-glide__thumbs__track {
+		flex-direction: column;
+		touch-action: pan-x pinch-zoom;
+		height: inherit;
+	}
+
+	.ghostlabs-glide__thumbs__slide {
+		flex: 1 0 auto;
+		display: flex;
+	}
+
+	// Offset the prev arrow past the thumbnail column
+	.ghostlabs-glide__arrow--prev {
+		left: calc(min(var(--ghostlabs-glide-slide-height, 60vh) * 0.3, 200px) + 12px);
+	}
+
+	.ghostlabs-glide__dots,
+	.ghostlabs-glide__progress,
+	.ghostlabs-glide__pause,
+	.ghostlabs-glide__live-region {
+		grid-column: 1 / -1;
+	}
+}
+
+.ghostlabs-glide--content-slider.has-thumbnails--right {
+	grid-template-columns: minmax(0, 1fr) auto;
+
+	.ghostlabs-glide__viewport {
+		grid-column: 1;
+	}
+
+	.ghostlabs-glide__thumbs {
+		grid-column: 2;
+	}
+
+	// Offset the next arrow past the thumbnail column
+	.ghostlabs-glide__arrow--prev {
+		left: 12px;
+	}
+
+	.ghostlabs-glide__arrow--next {
+		right: calc(min(var(--ghostlabs-glide-slide-height, 60vh) * 0.3, 200px) + 12px);
+	}
+}
+
+// Responsive: collapse left/right to horizontal on small screens
+@media (max-width: 600px) {
+
+	.ghostlabs-glide--content-slider.has-thumbnails--left,
+	.ghostlabs-glide--content-slider.has-thumbnails--right {
+		display: block;
+
+		.ghostlabs-glide__thumbs {
+			width: 100%;
+			max-width: none;
+		}
+
+		.ghostlabs-glide__thumbs__track {
+			flex-direction: row;
+		}
+
+		.ghostlabs-glide__thumbs__slide {
+			flex: 0 0 20%;
+		}
+	}
+}
+
+@media (min-width: 576px) {
+
+	.ghostlabs-glide__thumbs__slide {
+		flex: 1 0 15%;
+	}
+}
+
+// Reduced motion
+@media (prefers-reduced-motion: reduce) {
+
+	.ghostlabs-glide--content-slider {
+
+		.ghostlabs-glide__track {
+			scroll-behavior: auto;
+		}
+	}
+
+	.ghostlabs-glide--content-slider.is-tween-fade .ghostlabs-glide-slide {
+		transition-duration: 0.01s;
+	}
+
+	.ghostlabs-glide__thumbs__slide,
+	.ghostlabs-glide__thumbs__slide button {
+		transition-duration: 0.01s;
+	}
+
+	.ghostlabs-glide--content-slider.is-auto-hide-controls {
+
+		.ghostlabs-glide__arrow,
+		.ghostlabs-glide__dots,
+		.ghostlabs-glide__progress,
+		.ghostlabs-glide__pause,
+		.ghostlabs-glide__thumbs {
+			transition-duration: 0.01s;
+		}
+	}
+}
+
+@media (max-width: 37.5rem) {
+
+	.ghostlabs-glide--content-slider {
+		--ghostlabs-glide-slides-per-view: 1 !important;
+	}
+
+	.ghostlabs-glide__thumbs__slide {
+		flex: 1;
+	}
+}

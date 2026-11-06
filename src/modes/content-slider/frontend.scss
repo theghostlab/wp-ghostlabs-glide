@@ -1,0 +1,10 @@
+@use "../../blocks/glide/base";
+@use "style";
+
+// 🔴 **After "style", and that order is load-bearing** — the same trap
+// `sticky-scroll/frontend.scss` documents. The tween rules override base slide
+// geometry at equal specificity, so source order is what decides, and moving
+// this `@use` to the top of `style.scss` would silently reverse it.
+// ---
+// An edition with no tween modules forwards nothing here.
+@use "@edition/tweens";

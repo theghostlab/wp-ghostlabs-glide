@@ -1,0 +1,40 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "ghostlabs/glide-testimonial-rating",
+  "version": "1.0.4",
+  "title": "Glide Testimonial Rating",
+  "category": "design",
+  "icon": "star-filled",
+  "description": "A 1-5 star rating for use inside a Glide Slide testimonial.",
+  "keywords": [
+    "rating",
+    "stars",
+    "testimonial",
+    "review"
+  ],
+  "ancestor": [
+    "ghostlabs/glide-slide"
+  ],
+  "attributes": {
+    "value": {
+      "type": "number",
+      "default": 5
+    },
+    "textAlign": {
+      "type": "string"
+    }
+  },
+  "supports": {
+    "html": false,
+    "color": {
+      "text": true,
+      "background": false,
+      "link": false
+    }
+  },
+  "textdomain": "ghostlabs-glide",
+  "editorScript": "file:./index.js",
+  "style": "file:./style-index.css",
+  "render": "file:./render.php"
+}

@@ -1,0 +1,72 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "ghostlabs/glide-slide",
+  "version": "1.0.4",
+  "title": "Glide Slide",
+  "category": "design",
+  "icon": "cover-image",
+  "description": "One slide or scroll step. Holds any blocks except another Glide.",
+  "keywords": [
+    "slide",
+    "carousel",
+    "slider"
+  ],
+  "example": {},
+  "parent": [
+    "ghostlabs/glide"
+  ],
+  "attributes": {
+    "videoSource": {
+      "type": "string",
+      "default": "file"
+    },
+    "videoUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "videoId": {
+      "type": "number"
+    },
+    "videoPoster": {
+      "type": "string",
+      "default": ""
+    },
+    "videoAutoplay": {
+      "type": "boolean",
+      "default": true
+    },
+    "videoLoop": {
+      "type": "boolean",
+      "default": true
+    },
+    "videoMuted": {
+      "type": "boolean",
+      "default": true
+    },
+    "videoControls": {
+      "type": "boolean",
+      "default": true
+    },
+    "stepTitle": {
+      "type": "string",
+      "default": ""
+    },
+    "useHeadingAsTitle": {
+      "type": "boolean",
+      "default": true
+    },
+    "includeInContents": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "supports": {
+    "align": false
+  },
+  "textdomain": "ghostlabs-glide",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "render": "file:./render.php"
+}

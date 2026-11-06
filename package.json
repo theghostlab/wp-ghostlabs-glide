@@ -1,0 +1,35 @@
+{
+    "name": "glide-free",
+    "version": "1.0.4",
+    "description": "Glide — content slider and sticky scroll blocks for WordPress",
+    "license": "GPL-2.0-or-later",
+    "author": "GhostLabs",
+    "type": "module",
+    "engines": {
+        "node": ">=24 <26"
+    },
+    "scripts": {
+        "build": "wp-scripts build --config webpack.config.cjs && node dev/sass.mjs && mkdir -p build && touch build/.compiled",
+        "start": "wp-scripts start --config webpack.config.cjs",
+        "format": "wp-scripts format",
+        "lint:css": "wp-scripts lint-style && pnpm run --silent lint:css:shared",
+        "lint:css:shared": "test ! -d ../shared || wp-scripts lint-style '../shared/**/*.{css,pcss,scss}'",
+        "lint:js": "wp-scripts lint-js && pnpm run --silent lint:js:shared",
+        "lint:js:shared": "test ! -d ../shared || (cd .. && wp-scripts lint-js -c \"$OLDPWD/.eslintrc.json\" shared)"
+    },
+    "devDependencies": {
+        "@axe-core/playwright": "^4.14.0",
+        "@playwright/test": "1.60.0",
+        "@wordpress/e2e-test-utils-playwright": "1.43.0",
+        "@wordpress/env": "^11.5.0",
+        "@wordpress/icons": "^12.2.0",
+        "@wordpress/scripts": "^31.8.0",
+        "react": "18.3.1",
+        "react-dom": "18.3.1",
+        "sass": "1.102.0",
+        "typescript": "6.0.3"
+    },
+    "dependencies": {
+        "embla-carousel": "^8.6.0"
+    }
+}

@@ -1,0 +1,53 @@
+/**
+ * Glide Slide - Editor-only styles
+ */
+
+.wp-block-ghostlabs-glide-slide.has-video-background {
+
+	&::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background: var(--ghostlabs-slide-poster) center / cover no-repeat;
+		z-index: 0;
+		pointer-events: none;
+	}
+
+	&::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		pointer-events: none;
+		background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='24' r='23' fill='rgba(0,0,0,0.5)' stroke='white' stroke-width='2'/%3E%3Cpolygon points='19,14 19,34 35,24' fill='white'/%3E%3C/svg%3E") center / 48px 48px no-repeat;
+	}
+}
+
+.wp-block-ghostlabs-glide.ghostlabs-glide--content-slider {
+
+	.wp-block-ghostlabs-glide-slide {
+		grid-area: 1 / 1;
+
+		:is(&.is-selected),
+		:is(&.has-child-selected),
+		:is(&.last-selected) {
+			visibility: visible;
+		}
+
+		.block-editor-block-list__layout {
+
+			> *:first-child {
+				margin-block-start: 0;
+			}
+
+			> *:last-child {
+				margin-block-end: 0;
+			}
+
+			> *:only-of-type,
+			> *:only-child {
+				margin-block: 0;
+			}
+		}
+	}
+}

@@ -1,0 +1,21 @@
+# Which dependencies may run install scripts.
+#
+# One entry per package this edition's toolchain actually installs — an edition
+# with a larger toolchain has a longer list.
+#
+# ⚠️ Without this file `pnpm install` exits 1 with ERR_PNPM_IGNORED_BUILDS *after*
+# installing everything successfully. A CI step reading only the exit code would
+# call a good install a failed one, and a developer reading only the last line
+# would think nothing had installed.
+#
+# ⚠️ **No `.npmrc` here, deliberately.** This edition depends on nothing from a
+# private registry, and that is a property worth keeping rather than an accident:
+# it is what lets anyone — including a WordPress.org reviewer — clone this and
+# build it with no credentials at all. A scope mapping added here would quietly
+# end that, and the build would still pass for whoever already had the token.
+allowBuilds:
+  '@parcel/watcher': false
+  core-js: false
+  core-js-pure: false
+  fs-ext-extra-prebuilt: false
+  unrs-resolver: false

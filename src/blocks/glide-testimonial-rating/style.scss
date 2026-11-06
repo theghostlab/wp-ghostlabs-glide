@@ -1,0 +1,38 @@
+// Glide Testimonial Rating - shared editor + frontend styles
+
+.ghostlabs-glide-testimonial__rating {
+	display: block;
+	font-size: 1.25rem;
+	line-height: 1;
+
+	// ⚠️ A colour that holds 3:1 (WCAG 1.4.11, the stars carry the rating) on a
+	// light page AND a dark one: 5.02:1 on white, 4.18:1 on black. The gold it
+	// replaced was 1.85:1 on white. Authors can set their own through the
+	// block's text colour support; WordPress's preset classes are `!important`
+	// and a custom colour is inline, so either wins over this.
+	// `stylesheet.test.js` computes both ratios from this line.
+	color: #b45309;
+
+	> span {
+		letter-spacing: 0.125em;
+	}
+
+	// text-align covers normal block-flow parents.
+	// align-self covers flex parents (e.g. the testimonial article uses
+	// align-items: center, which would otherwise shrink the wrapper to
+	// content width and leave text-align nothing to push against).
+	&.has-text-align-left {
+		text-align: left;
+		align-self: flex-start;
+	}
+
+	&.has-text-align-center {
+		text-align: center;
+		align-self: center;
+	}
+
+	&.has-text-align-right {
+		text-align: right;
+		align-self: flex-end;
+	}
+}

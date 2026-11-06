@@ -1,0 +1,406 @@
+// Sticky Scroll Mode - Frontend Styles
+// Layout is entirely CSS `position: sticky`. JavaScript only sets the active
+// step; nothing here depends on it having run.
+// NOTE: zero-valued length custom properties MUST keep their unit (`0px`, not
+// `0`). They are substituted raw into calc() below, and a unitless zero makes
+// the whole declaration invalid. See the stylelint note in CLAUDE.md.
+// ---
+// Division of labour between this stylesheet and the theme:
+//   - The plugin owns *structure*: surfaces, spacing, the measure, and the
+//     chrome it generates itself (rail, dots, progress bars, numerals).
+//   - The theme owns *type*: family, size, weight and colour of authored
+//     blocks.
+// So nothing below sets a font-size on an authored heading or paragraph. A
+// block theme's theme.json emits `h2 { font-size: … }` at (0,0,1), and a size
+// set per block in the editor emits an inline style; competing with either
+// would mean a specificity fight the plugin should not be having.
+
+.ghostlabs-glide--sticky-scroll {
+	--ghostlabs-glide-sticky-offset: 40px;
+	--ghostlabs-glide-rail-width: 240px;
+	--ghostlabs-glide-rail-gap: 48px;
+	--ghostlabs-glide-step-gap: 0px;
+	--ghostlabs-glide-progress: 0;
+
+	// Styling tokens. Every colour is the theme's own currentColor mixed down
+	// rather than a fixed value, so the patterns inherit whatever palette they
+	// land in — including a dark one — without a second set of overrides.
+	// The surface is the exception: it prefers the theme's declared base colour
+	// and falls back to the browser's canvas system colour. ⚠️ That contrasts
+	// with the page's text, NOT with every section's: inside a dark Group with
+	// light text the base colour is the text colour, and the cards went white on
+	// white. `_surface.js` measures that case at init and swaps in the ground the
+	// block actually sits on; a value that already works is left alone.
+	--ghostlabs-glide-surface: var(--wp--preset--color--base, canvas);
+	--ghostlabs-glide-hairline: rgba(127, 127, 127, 0.3);
+	--ghostlabs-glide-sunken: rgba(127, 127, 127, 0.12);
+	--ghostlabs-glide-muted: currentcolor;
+	// ⚠️ **Decoration only, never text.** At 45% of the text colour it measures
+	// about 3:1 on white, which non-text graphics may use and text may not
+	// (WCAG 1.4.3 needs 4.5:1 at these 11px sizes). Every label — the rail
+	// title, markers and counter, the step numerals — takes `muted` instead.
+	--ghostlabs-glide-faint: rgba(127, 127, 127, 0.85);
+	--ghostlabs-glide-radius: 14px;
+	--ghostlabs-glide-card-radius: 18px;
+	--ghostlabs-glide-measure: 62ch;
+
+	// `position: sticky` is defeated by any ancestor with a clipping overflow,
+	// and the content-slider viewport sets `overflow: clip`. Being explicit
+	// here keeps a theme or a future shared rule from silently breaking the
+	// whole mode.
+	overflow: visible;
+
+	// The step wrapper is the scroll track: its height is what decides how
+	// long the rail stays stuck.
+	.ghostlabs-glide__steps {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ghostlabs-glide-step-gap, 0px);
+		min-width: 0;
+	}
+
+	.ghostlabs-glide__step {
+		min-height: 60vh;
+
+		// Matches the sticky offset so anchor navigation does not park the
+		// heading underneath the stuck rail. A rail stuck *above* the steps (the
+		// top bar, or the phone scroller) also adds its own height, which
+		// chapters.js publishes as --ghostlabs-glide-rail-height.
+		scroll-margin-top: calc(var(--ghostlabs-glide-sticky-offset, 40px) + 16px);
+
+		// The step is focused programmatically by anchor navigation; it should
+		// not draw a focus ring as though it were interactive.
+		&:focus {
+			outline: none;
+		}
+
+		&:focus-visible {
+			outline: 2px solid currentcolor;
+			outline-offset: 4px;
+		}
+	}
+}
+
+// ⚠️ The plain values above are the fallback, and they have to come first.
+// A custom property holding an unsupported `color-mix()` still *parses* — a
+// custom property accepts any token sequence — and only fails when it is
+// substituted. At that point the declaration it was substituted into becomes
+// invalid at computed-value time and resets to its initial value, which for
+// `border-color` is `currentcolor`: a solid, full-contrast hairline rather than
+// a missing one. Guarding the mixes behind @supports keeps that from happening.
+@supports (color: color-mix(in srgb, currentcolor 50%, transparent)) {
+
+	.ghostlabs-glide--sticky-scroll {
+		--ghostlabs-glide-hairline: color-mix(in srgb, currentcolor 14%, transparent);
+		--ghostlabs-glide-sunken: color-mix(in srgb, currentcolor 6%, transparent);
+		--ghostlabs-glide-muted: color-mix(in srgb, currentcolor 72%, transparent);
+		--ghostlabs-glide-faint: color-mix(in srgb, currentcolor 45%, transparent);
+	}
+}
+
+// -----------------------------------------------------------------------------
+// Sticky Chapters
+// -----------------------------------------------------------------------------
+
+.ghostlabs-glide--sticky-chapters {
+	display: grid;
+	gap: var(--ghostlabs-glide-rail-gap, 48px);
+
+	&.has-rail--left {
+		grid-template-columns: var(--ghostlabs-glide-rail-width, 240px) minmax(0, 1fr);
+	}
+
+	&.has-rail--right {
+		grid-template-columns: minmax(0, 1fr) var(--ghostlabs-glide-rail-width, 240px);
+
+		.ghostlabs-glide__rail {
+			order: 2;
+		}
+	}
+
+	&.has-rail--top {
+		grid-template-columns: minmax(0, 1fr);
+
+		// ⚠️ Stuck above the steps rather than beside them, so it scrolls over
+		// them: without a surface it was a transparent layer of links over the
+		// text, and a focused link scrolled underneath it was hidden.
+		.ghostlabs-glide__rail {
+			z-index: 1;
+			padding-block: 8px;
+			background: var(--ghostlabs-glide-surface);
+		}
+
+		// ⚠️ **The step *and everything in it*.** A browser scrolling focus
+		// into view honours the focused element's own margin, not the step's:
+		// with the margin on the step alone, shift-tabbing up to a link in a
+		// step parked it under the stuck rail, entirely hidden (WCAG 2.4.11,
+		// measured 2026-11-01).
+		.ghostlabs-glide__step,
+		.ghostlabs-glide__step * {
+			scroll-margin-top: calc(var(--ghostlabs-glide-sticky-offset, 40px) + var(--ghostlabs-glide-rail-height, 0px) + 16px);
+		}
+	}
+
+	// The rail is itself a two-column grid: a 2px track running down the left of
+	// the list, and the list beside it. The track is a ::before rather than a
+	// border on the list so the optional progress fill can share the same grid
+	// cell and paint over it. Both are pinned to row 2, which is deterministic
+	// because the title in row 1 is always rendered — that is also why the fill
+	// needs no absolute positioning and no measurement of the list.
+	.ghostlabs-glide__rail {
+		position: sticky;
+		top: var(--ghostlabs-glide-sticky-offset, 40px);
+
+		// Without this the rail stretches to the grid row's full height and
+		// never has anywhere to slide.
+		align-self: start;
+		display: grid;
+		grid-template-columns: 2px minmax(0, 1fr);
+		column-gap: 18px;
+	}
+
+	.ghostlabs-glide__rail::before {
+		content: "";
+		grid-column: 1;
+		grid-row: 2;
+		background: var(--ghostlabs-glide-hairline);
+	}
+
+	.ghostlabs-glide__rail-title {
+		grid-column: 1 / -1;
+		grid-row: 1;
+		margin: 0 0 14px;
+		font-size: 0.6875rem;
+		font-weight: 600;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--ghostlabs-glide-muted);
+	}
+
+	// The fill itself, not a track holding one: the ticker publishes
+	// (index + 1) / count, which lands exactly on a row edge because every row
+	// is the same height.
+	.ghostlabs-glide__rail-progress {
+		grid-column: 1;
+		grid-row: 2;
+		align-self: start;
+		width: 100%;
+		height: calc(var(--ghostlabs-glide-progress, 0) * 100%);
+		background: currentcolor;
+		transition: height 0.3s ease;
+	}
+
+	.ghostlabs-glide__rail-list {
+		grid-column: 2;
+		grid-row: 2;
+		display: flex;
+		flex-direction: column;
+
+		// Zero, so the track beside it reads as one continuous line rather than
+		// a dashed one.
+		gap: 0;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		counter-reset: ghostlabs-glide-step;
+	}
+
+	.ghostlabs-glide__rail-item {
+		counter-increment: ghostlabs-glide-step;
+		margin: 0;
+	}
+
+	// Colour rather than opacity. Fading the whole link fades the marker with
+	// it, which makes the entire rail read as disabled instead of as a list with
+	// one entry highlighted.
+	.ghostlabs-glide__rail-link {
+		display: flex;
+		align-items: baseline;
+		gap: 12px;
+		padding: 10px 0;
+		color: var(--ghostlabs-glide-muted);
+		text-decoration: none;
+		transition: color 0.2s ease;
+
+		&:hover,
+		&:focus-visible {
+			color: inherit;
+		}
+	}
+
+	.ghostlabs-glide__rail-item.is-active .ghostlabs-glide__rail-link {
+		color: inherit;
+		font-weight: 600;
+	}
+
+	.ghostlabs-glide__rail-marker {
+		flex: 0 0 auto;
+		font-variant-numeric: tabular-nums;
+		font-size: 0.6875rem;
+		color: var(--ghostlabs-glide-muted);
+	}
+
+	.ghostlabs-glide__rail-item.is-active .ghostlabs-glide__rail-marker {
+		color: inherit;
+	}
+
+	// Marker styles are mutually exclusive; PHP stamps exactly one.
+	// Two digits, so 9 → 10 does not shift the labels sideways.
+	&.is-marker-numbered .ghostlabs-glide__rail-marker::before {
+		content: counter(ghostlabs-glide-step, decimal-leading-zero);
+	}
+
+	&.is-marker-dot .ghostlabs-glide__rail-marker {
+		align-self: center;
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: var(--ghostlabs-glide-faint);
+	}
+
+	&.is-marker-dot .ghostlabs-glide__rail-item.is-active .ghostlabs-glide__rail-marker {
+		background: currentcolor;
+	}
+
+	&.is-marker-plain .ghostlabs-glide__rail-marker {
+		display: none;
+	}
+
+	.ghostlabs-glide__rail-counter {
+		grid-column: 1 / -1;
+		grid-row: 3;
+		margin: 18px 0 0;
+		font-variant-numeric: tabular-nums;
+		font-size: 0.6875rem;
+		color: var(--ghostlabs-glide-muted);
+	}
+
+	// Caps line length without narrowing the column, so the steps keep their
+	// share of the grid and only the text is constrained.
+	.ghostlabs-glide__step > * {
+		max-width: var(--ghostlabs-glide-measure);
+	}
+
+	// A ::before rather than a border-top on the step, so the rule can be capped
+	// at the measure and stay aligned with the text instead of running the full
+	// width of the column.
+	.ghostlabs-glide__step + .ghostlabs-glide__step::before {
+		content: "";
+		display: block;
+		max-width: var(--ghostlabs-glide-measure);
+		margin-bottom: 44px;
+		border-top: 1px solid var(--ghostlabs-glide-hairline);
+	}
+}
+
+// -----------------------------------------------------------------------------
+// Responsive
+// -----------------------------------------------------------------------------
+
+// Matches @wordpress/base-styles $break-medium, the breakpoint the rest of the
+// plugin's responsive rules already use.
+@media (max-width: 781px) {
+
+	.ghostlabs-glide--sticky-chapters {
+
+		&.has-rail--left,
+		&.has-rail--right {
+			grid-template-columns: minmax(0, 1fr);
+		}
+
+		// ⚠️ The same compound as the desktop rule it cancels, which a media
+		// query adds no specificity to. A plain `.ghostlabs-glide__rail` lost,
+		// so a right-hand rail sat *below* the steps on a phone, where a
+		// sticky top never engages.
+		&.has-rail--right .ghostlabs-glide__rail {
+			order: 0;
+		}
+
+		// The rail stays stuck, as a one-row strip above the steps: the full
+		// vertical list stuck to a phone's top would eat most of the screen,
+		// and an unstuck one scrolls away with the highlight, which is the
+		// only cue a reader has for where they are. chapters.js keeps the
+		// active entry scrolled into view inside the strip.
+		// ⚠️ **There used to be a choice here, and old blocks still carry it.**
+		// "On mobile: Unstick the rail" (`mobileBehaviour: details`, the
+		// default) set the rail static, so on a phone the highlight was off
+		// screen for every step after the first. The option was removed on
+		// 2026-10-31 and the saved value is ignored; nothing here may key on
+		// it again.
+		.ghostlabs-glide__rail {
+			grid-template-columns: minmax(0, 1fr);
+			column-gap: 0;
+			z-index: 1;
+			padding-block: 8px;
+			background: var(--ghostlabs-glide-surface);
+		}
+
+		// The step and everything in it, as for the top rail above.
+		.ghostlabs-glide__step,
+		.ghostlabs-glide__step * {
+			scroll-margin-top: calc(var(--ghostlabs-glide-sticky-offset, 40px) + var(--ghostlabs-glide-rail-height, 0px) + 16px);
+		}
+
+		// A vertical track beside a horizontal list is nonsense, so the strip
+		// drops both the track and its fill.
+		.ghostlabs-glide__rail::before,
+		.ghostlabs-glide__rail-progress {
+			display: none;
+		}
+
+		.ghostlabs-glide__rail-list {
+			grid-column: 1 / -1;
+			flex-direction: row;
+			overflow-x: auto;
+			gap: 16px;
+			scrollbar-width: none;
+		}
+
+		.ghostlabs-glide__rail-link {
+			white-space: nowrap;
+		}
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.ghostlabs-glide--sticky-chapters {
+
+		.ghostlabs-glide__rail-link,
+		.ghostlabs-glide__rail-progress {
+			transition-duration: 0.01ms;
+		}
+	}
+}
+
+// -----------------------------------------------------------------------------
+// Smooth chapter navigation
+// -----------------------------------------------------------------------------
+// Sits on <html> only while a Sticky Chapters link is navigating, so the
+// browser's own fragment navigation animates rather than jumping. chapters.js
+// adds it on click and takes it off when the scroll settles. Deliberately not a
+// standing rule: page-wide smooth scrolling would otherwise apply to every
+// other link and script on the page.
+
+// ⚠️ Here, in the shared stylesheet, because Sticky Chapters ships in every
+// edition. It used to live in pro's `@edition/_sticky-patterns.scss`, so in
+// free the Smooth scroll toggle added the class and nothing styled it.
+
+.ghostlabs-glide-is-smooth-scrolling {
+	scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	// This is the guarantee, not a second opinion: the module does not check
+	// the query at all, so someone who asked for less motion never gets an
+	// animated scroll even though the class is still applied. Must stay after
+	// the rule above — a media query adds no specificity.
+	.ghostlabs-glide-is-smooth-scrolling {
+		scroll-behavior: auto;
+	}
+}
+
+// -----------------------------------------------------------------------------
+// Sticky Media
+// -----------------------------------------------------------------------------

@@ -1,0 +1,57 @@
+// "Already own …?": the way in for somebody who has bought the paid edition
+// (board 5b).
+
+// A single row until opened: the pitch below gets the weight, this gets a
+// heading and a button-shaped summary.
+
+// 🔴 A native `<details>`, with no script. The strip explains the download,
+// upload and activate steps and does nothing itself; WordPress.org refused
+// the in-place upgrade it used to run. See `Render\UpgradePanel`.
+
+.ghostlabs-glide-handoff__summary {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--ghostlabs-glide-upsell-space-6);
+	cursor: pointer;
+	// The disclosure triangle: the button-shaped label already says it opens.
+	// A flex summary is no longer a list item, so it draws none. ⚠️ Safari
+	// before 18.4 keeps its own triangle whatever the display, which is
+	// harmless; no prefixed pseudo-element is added for it.
+	list-style: none;
+
+	&:focus-visible {
+		outline: var(--ghostlabs-glide-upsell-ring) solid var(--ghostlabs-glide-upsell-accent);
+		outline-offset: var(--ghostlabs-glide-upsell-space-2);
+		border-radius: var(--ghostlabs-glide-upsell-radius-button);
+	}
+}
+
+.ghostlabs-glide-handoff__heading {
+	font-size: var(--ghostlabs-glide-upsell-text-sm);
+	font-weight: 600;
+	line-height: var(--ghostlabs-glide-upsell-leading-snug);
+	color: var(--ghostlabs-glide-upsell-ink);
+}
+
+.ghostlabs-glide-handoff__region {
+	margin-block-start: var(--ghostlabs-glide-upsell-space-6);
+}
+
+// ⚠️ Two classes: the column's own `.ghostlabs-glide-upgrade p { margin: 0 }`
+// is (0,1,1) and silently beats a single class.
+.ghostlabs-glide-upgrade .ghostlabs-glide-handoff__sub {
+	margin: 0;
+	color: var(--ghostlabs-glide-upsell-text);
+}
+
+// Two classes: `.wrap ol` reaches further than a single class, and the steps
+// sit on the strip's own rhythm.
+.ghostlabs-glide-upgrade .ghostlabs-glide-handoff__steps {
+	display: grid;
+	gap: var(--ghostlabs-glide-upsell-space-3);
+	margin-block: var(--ghostlabs-glide-upsell-space-4) 0;
+	margin-inline: var(--ghostlabs-glide-upsell-space-6) 0;
+	padding: 0;
+	color: var(--ghostlabs-glide-upsell-text);
+}

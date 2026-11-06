@@ -1,0 +1,9 @@
+// The extra Sticky Scroll layouts this edition ships: none.
+// ---
+// There are none in this tree. Publishing rules for layouts this build
+// cannot render would put dead CSS into a published plugin.
+// ---
+// ⚠️ The file has to exist even though it is empty. The `@use` in the
+// shared stylesheet is resolved at compile time and a missing partial is
+// a hard Sass error, so an edition with nothing to add says so with an
+// empty file.

@@ -1,0 +1,125 @@
+// The brand hero: Upsell Page F3's wave band, as every sibling's settings
+// screen ships it.
+
+// The gradient is a fill on the band itself, not part of any art: the wave is
+// the line texture only. Both images ship inside the plugin (Guideline 7),
+// and are asked for by a relative path that `Service\UpgradePageTest`
+// follows.
+
+@use "tokens";
+
+.ghostlabs-glide-hero {
+	position: relative;
+	overflow: hidden;
+	min-block-size: var(--ghostlabs-glide-upsell-hero-min);
+	// The band overlaps the table below it by the sweep's foot, as the design
+	// draws it.
+	margin-block: var(--ghostlabs-glide-upsell-space-10) calc(var(--ghostlabs-glide-upsell-space-3) * -1);
+	background-image: linear-gradient(180deg, var(--ghostlabs-glide-upsell-primary-700) 0%, var(--ghostlabs-glide-upsell-primary-400) 100%);
+	text-align: center;
+}
+
+.ghostlabs-glide-hero__texture,
+.ghostlabs-glide-hero__sweep {
+	position: absolute;
+	inset: 0;
+}
+
+.ghostlabs-glide-hero__texture {
+	background-image: url(../images/upsell/wave-bg.svg);
+	background-position: center 42%;
+	background-size: cover;
+}
+
+// Full-bleed rather than a bottom strip: the sweep paints at its own ratio
+// anchored to the foot, and its transparent upper half is what lets the
+// gradient read through.
+
+// ⚠️ Its last band is painted in wp-admin's ground, #F0F0F1. If this screen's
+// background ever changes, the asset has to change with it.
+.ghostlabs-glide-hero__sweep {
+	background-image: url(../images/upsell/separator-gray.svg);
+	background-position: bottom center;
+	background-repeat: no-repeat;
+	background-size: 100% auto;
+}
+
+.ghostlabs-glide-hero__copy {
+	position: relative;
+	padding: var(--ghostlabs-glide-upsell-space-10) var(--ghostlabs-glide-upsell-space-10) var(--ghostlabs-glide-upsell-space-14);
+}
+
+// ⚠️ #E2D8F3, not the mock's #BFA8DD: the mock's colour measures 3.04:1
+// against the gradient's lower stop. axe cannot see this: it reads declared
+// colours, not the painted band behind them.
+.ghostlabs-glide-upgrade .ghostlabs-glide-hero__eyebrow {
+	font-size: var(--ghostlabs-glide-upsell-text-2xs);
+	font-weight: 700;
+	letter-spacing: var(--ghostlabs-glide-upsell-tracking-caps);
+	text-transform: uppercase;
+	color: var(--ghostlabs-glide-upsell-primary-25);
+}
+
+// Two classes: core's `.wrap h2` would otherwise set its own size and
+// margins.
+.ghostlabs-glide-upgrade .ghostlabs-glide-hero__headline {
+	margin: var(--ghostlabs-glide-upsell-space-2-5) 0 0;
+	font-size: var(--ghostlabs-glide-upsell-text-hero);
+	font-weight: 700;
+	line-height: var(--ghostlabs-glide-upsell-leading-snug);
+	color: var(--ghostlabs-glide-upsell-surface);
+}
+
+.ghostlabs-glide-upgrade .ghostlabs-glide-hero__sub {
+	max-inline-size: var(--ghostlabs-glide-upsell-hero-measure);
+	margin: var(--ghostlabs-glide-upsell-space-3) auto 0;
+	font-size: var(--ghostlabs-glide-upsell-text-base);
+	line-height: var(--ghostlabs-glide-upsell-leading-relaxed);
+	color: var(--ghostlabs-glide-upsell-primary-25);
+}
+
+// White pill, purple ring. A dark ring loses against the gradient (2.4:1) and
+// a light one against the pill; the outer white ring puts white on the
+// gradient (6.5:1), which is what makes the focus state visible.
+.ghostlabs-glide-hero__pill {
+	display: inline-block;
+	margin-block-start: var(--ghostlabs-glide-upsell-space-6);
+	padding: var(--ghostlabs-glide-upsell-space-2-5) var(--ghostlabs-glide-upsell-space-12);
+	border: var(--ghostlabs-glide-upsell-ring) solid var(--ghostlabs-glide-upsell-primary-400);
+	border-radius: var(--ghostlabs-glide-upsell-radius-pill);
+	background: var(--ghostlabs-glide-upsell-surface);
+	box-shadow: var(--ghostlabs-glide-upsell-shadow-pill);
+	font-size: var(--ghostlabs-glide-upsell-text-xl);
+	font-weight: 600;
+	text-decoration: none;
+	color: var(--ghostlabs-glide-upsell-primary-500);
+	transition: color var(--ghostlabs-glide-upsell-duration);
+
+	&:is(:hover, :focus) {
+		color: var(--ghostlabs-glide-upsell-primary-400);
+	}
+
+	&:focus-visible {
+		outline: var(--ghostlabs-glide-upsell-ring-wide) solid var(--ghostlabs-glide-upsell-surface);
+		outline-offset: var(--ghostlabs-glide-upsell-ring);
+	}
+}
+
+// A phone's width: the desktop padding and the 36px headline leave four words
+// a line and a pill that wraps its own label. The band stays the same shape,
+// just tighter.
+@media (max-width: tokens.$narrow) {
+
+	.ghostlabs-glide-hero__copy {
+		padding: var(--ghostlabs-glide-upsell-space-8) var(--ghostlabs-glide-upsell-space-5) var(--ghostlabs-glide-upsell-space-12);
+	}
+
+	.ghostlabs-glide-upgrade .ghostlabs-glide-hero__headline {
+		font-size: var(--ghostlabs-glide-upsell-text-xl);
+	}
+
+	.ghostlabs-glide-hero__pill {
+		padding-inline: var(--ghostlabs-glide-upsell-space-6);
+		font-size: var(--ghostlabs-glide-upsell-text-base);
+	}
+}

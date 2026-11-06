@@ -1,0 +1,499 @@
+/**
+ * Glide - Editor-only styles
+ *
+ * Mode styles are included here so the editor WYSIWYG preview has full
+ * styling for every mode. On the frontend, mode CSS is loaded
+ * conditionally by ModeStyleLoader instead.
+ */
+
+// ⚠️ Per-edition, for the same reason `view.js` is. Sass resolves `@use` at
+// compile time and fails hard on a missing file, so a shared stylesheet naming
+// a mode only some editions compile would break the others outright.
+// `@edition/modes` forwards whichever this one ships.
+@use "@edition/modes";
+
+// The editor previews for whatever layouts and modes this edition adds.
+@use "@edition/editor-patterns";
+
+.wp-block-ghostlabs-glide {
+	border: 1px dotted rgba(0, 0, 0, 0.15);
+	border-radius: 2px;
+}
+
+// Layout picker — shown in place of the inner blocks while the block is empty.
+// Editor-only: the frontend never renders an empty Glide block, because picking
+// a layout is what gives it any content in the first place.
+// ---
+// Not a components-Placeholder: that centres its children, caps them at its own
+// widths and paints a grey field the cards then have to sit on. This is a plain
+// panel, so the seven cards are the only thing in it.
+.ghostlabs-glide__layout-picker {
+	--ghostlabs-glide-picker-edge: #ddd;
+	--ghostlabs-glide-picker-ink: #1e1e1e;
+	--ghostlabs-glide-picker-ink-soft: #3c434a;
+	--ghostlabs-glide-picker-ink-faint: #757575;
+
+	// Brand purple. The border and wash keep it exactly; the text does not —
+	// #b499d7 is 2.48:1 on white, which fails both the 4.5:1 body-text
+	// threshold and the 3:1 one for UI borders, and the description is 12px.
+	// #7847b8 is the same hue at half the lightness and measures 6.19:1.
+	--ghostlabs-glide-picker-accent: #b499d7;
+	--ghostlabs-glide-picker-accent-ink: #7847b8;
+	--ghostlabs-glide-picker-accent-wash: #f7f3fc;
+
+	// The diagram palette, read by _utils/layout-thumbnails.js. Declared here
+	// so a retheme is one block rather than seven components.
+	--ghostlabs-glide-thumb-field: #f6f7f8;
+	--ghostlabs-glide-thumb-solid: #d7dce3;
+	--ghostlabs-glide-thumb-soft: #eaedf1;
+	--ghostlabs-glide-thumb-accent: var(--wp-admin-theme-color, #3858e9);
+
+	box-sizing: border-box;
+
+	// 4 across at full width. The cards carry diagrams, so they stop being
+	// legible well before they stop fitting.
+	max-width: 1120px;
+	margin-inline: auto;
+	padding: 28px;
+	background: #fff;
+	border: 1px solid var(--ghostlabs-glide-picker-edge);
+	border-radius: 6px;
+
+	.ghostlabs-glide__layout-picker-title {
+		margin: 0;
+		color: var(--ghostlabs-glide-picker-ink);
+		font-size: 14px;
+		font-weight: 600;
+		line-height: 1.5;
+	}
+
+	.ghostlabs-glide__layout-picker-instructions {
+		margin: 6px 0 20px;
+		color: var(--ghostlabs-glide-picker-ink-soft);
+		font-size: 13px;
+		line-height: 1.5;
+	}
+
+	// auto-fit rather than a fixed count, so the picker keeps working in a
+	// narrow canvas without a media query it would have to guess the width
+	// for. At the 1064px inner width this resolves to the four columns the
+	// design is drawn at.
+	.ghostlabs-glide__layout-picker-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr));
+		gap: 12px;
+		width: 100%;
+	}
+
+	// Grid items stretch, so every card in a row is as tall as the tallest —
+	// which is what keeps a two-line description from leaving its neighbours
+	// short.
+	.ghostlabs-glide__layout-choice {
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+		box-sizing: border-box;
+		width: 100%;
+		height: auto;
+		margin: 0;
+		padding: 14px;
+		color: inherit;
+		text-align: left;
+		white-space: normal;
+		background: #fff;
+		border: 1px solid var(--ghostlabs-glide-picker-edge);
+		border-radius: 6px;
+		cursor: pointer;
+		transition:
+			background-color 0.12s linear,
+			border-color 0.12s linear,
+			box-shadow 0.12s linear,
+			color 0.12s linear;
+	}
+
+	.ghostlabs-glide__layout-choice-thumb {
+		display: block;
+		width: 100%;
+		height: auto;
+		border-radius: 4px;
+	}
+
+	.ghostlabs-glide__layout-choice-label {
+		margin-top: 12px;
+		color: var(--ghostlabs-glide-picker-ink);
+		font-size: 13px;
+		font-weight: 600;
+		line-height: 1.5;
+	}
+
+	.ghostlabs-glide__layout-choice-description {
+		margin-top: 4px;
+		color: var(--ghostlabs-glide-picker-ink-faint);
+		font-size: 12px;
+		line-height: 1.45;
+	}
+
+	// Hover and keyboard focus are the same state, so a card never looks
+	// reachable by mouse only.
+	// ---
+	// Nothing here changes a size: the extra half pixel of edge is a
+	// box-shadow ring outside the border box rather than a wider border, so
+	// the card's content cannot shift by half a pixel and reflow its text.
+	.ghostlabs-glide__layout-choice:hover,
+	.ghostlabs-glide__layout-choice:focus-visible {
+		background: var(--ghostlabs-glide-picker-accent-wash);
+		border-color: var(--ghostlabs-glide-picker-accent);
+		box-shadow: 0 0 0 0.5px var(--ghostlabs-glide-picker-accent);
+
+		.ghostlabs-glide__layout-choice-label,
+		.ghostlabs-glide__layout-choice-description {
+			color: var(--ghostlabs-glide-picker-accent-ink);
+		}
+	}
+
+	// A sticky card waits for the registered patterns to load (see
+	// GlideLayoutPicker in edit.js). Usually a fraction of a second.
+	.ghostlabs-glide__layout-choice:disabled {
+		cursor: progress;
+		opacity: 0.6;
+	}
+
+	// The purple is a 2.48:1 edge, which is not a focus indicator on its own.
+	// Keyboard focus keeps the admin ring on top of it.
+	.ghostlabs-glide__layout-choice:focus-visible {
+		outline: 2px solid var(--wp-admin-theme-color, #3858e9);
+		outline-offset: 2px;
+	}
+}
+
+// Content-slider chrome renders off the mode's own settings, so an empty
+// block still painted arrows and a progress bar — on top of the picker, which
+// is what the picker replaced them with. Dots and thumbnails already bail on a
+// zero slide count; these two did not.
+.ghostlabs-glide.is-picking-layout {
+
+	.ghostlabs-glide__arrow,
+	.ghostlabs-glide__dots,
+	.ghostlabs-glide__progress,
+	.ghostlabs-glide__thumbs,
+	.ghostlabs-glide__pause {
+		display: none;
+	}
+}
+
+// Toolbar slide indicator
+.ghostlabs-glide__slide-indicator {
+	display: inline-flex;
+	align-items: center;
+	padding: 0 8px;
+	font-size: 13px;
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+	user-select: none;
+}
+
+// Content Slider mode: static frontend-style preview when the parent
+// (or nothing) is selected — N slides side-by-side with gap, mirroring
+// the runtime track in src/modes/content-slider/style.scss. When a
+// child slide is selected for editing, collapse back to a roomy
+// single-slide view.
+.wp-block-ghostlabs-glide.ghostlabs-glide--content-slider {
+	overflow: hidden;
+
+	> .block-editor-inner-blocks > .block-editor-block-list__layout {
+		display: flex;
+		column-gap: var(--ghostlabs-glide-gap, 0);
+
+		//Control Overlay
+		&:has(.ghostlabs-glide-overlay) {
+			position: relative;
+
+			.ghostlabs-glide-overlay {
+				position: absolute;
+				inset: 0;
+				z-index: 2;
+				display: grid;
+			}
+
+			.ghostlabs-glide-overlay > .ghostlabs-glide-overlay__content,
+			.ghostlabs-glide-overlay > .ghostlabs-glide-overlay__content > .block-editor-inner-blocks,
+			.ghostlabs-glide-overlay > .ghostlabs-glide-overlay__content > .block-editor-inner-blocks > .block-editor-block-list__layout {
+				display: grid;
+
+				> div {
+					margin: 0;
+				}
+			}
+
+			.ghostlabs-glide-overlay:has(~ .wp-block-ghostlabs-glide-slide.is-selected),
+			.ghostlabs-glide-overlay:has(~ .wp-block-ghostlabs-glide-slide.has-child-selected) {
+				display: none;
+			}
+		}
+		//Control Overlay
+
+		> .wp-block-ghostlabs-glide-slide {
+			min-width: 0;
+			flex: 0 0 calc((100% - var(--ghostlabs-glide-gap, 0px) * (var(--ghostlabs-glide-slides-per-view, 1) - 1)) / var(--ghostlabs-glide-slides-per-view, 1));
+			height: var(--ghostlabs-glide-slide-height, 60vh);
+			display: flex;
+			flex-direction: column;
+			justify-content: var(--ghostlabs-glide-slide-justify, center);
+
+			.wp-block-cover {
+				align-items: var(--ghostlabs-glide-slide-justify, center);
+			}
+
+			// Pass the slide height down through WP's inner-block wrappers
+			// so percentage-based children (e.g. Cover with min-height: 100%
+			// from the slide template) have a resolvable containing height.
+			> .block-editor-inner-blocks,
+			> .block-editor-inner-blocks > .block-editor-block-list__layout {
+				height: 100%;
+			}
+		}
+	}
+
+	// Responsive height: use the desktop breakpoint var in the editor.
+	&.is-responsive-height > .block-editor-inner-blocks > .block-editor-block-list__layout > .wp-block-ghostlabs-glide-slide {
+		height: var(--ghostlabs-glide-height-desktop, 600px);
+	}
+
+	// Auto-height: mirror the frontend's .is-auto-height override so the
+	// editor track sizes to the tallest slide's intrinsic content instead
+	// of the fixed slide-height variable.
+	&.is-auto-height > .block-editor-inner-blocks > .block-editor-block-list__layout > .wp-block-ghostlabs-glide-slide {
+		height: auto;
+
+		.wp-block-cover {
+			min-height: 60vh !important;
+		}
+	}
+
+	// Editing a slide: collapse to single-slide view at full width and
+	// hide siblings, so text/media editing isn't cramped at
+	// slidesPerView > 1.
+	&.has-child-selected:has(.wp-block-ghostlabs-glide-slide.is-selected),
+	&.has-child-selected:has(.wp-block-ghostlabs-glide-slide.has-child-selected) {
+
+		> .block-editor-inner-blocks > .block-editor-block-list__layout {
+			column-gap: 0;
+
+			> .wp-block-ghostlabs-glide-slide {
+				flex: 0 0 100%;
+			}
+
+			> .wp-block-ghostlabs-glide-slide:not(.is-selected):not(.has-child-selected) {
+				display: none;
+			}
+		}
+	}
+
+	// Tween badge: when a tween is active, paint a small label in the
+	// top-right corner so authors can see at a glance which tween is
+	// selected. Editor-only — the frontend style.scss never paints this.
+	// ⚠️ Matched on the shape of the class, not on four names. Which tween
+	// effects an edition ships is `@edition`'s answer, and listing them here
+	// meant this shared file naming three it may not have. The badge only
+	// paints where something below gives it a `content`, so a class with no
+	// label in this build is simply invisible.
+	&[class*="is-tween-"]::after {
+		position: absolute;
+		top: 8px;
+		right: 8px;
+		z-index: 2;
+		padding: 2px 8px;
+		background: rgba(0, 0, 0, 0.7);
+		color: #fff;
+		font-size: 11px;
+		font-weight: 500;
+		letter-spacing: 0.02em;
+		border-radius: 3px;
+		pointer-events: none;
+	}
+
+	// The label is the edition's translated tween name, put on the wrapper by
+	// edit.js. CSS `content` text cannot be translated, which is why it is not
+	// written here.
+	&[data-ghostlabs-tween-label]::after {
+		content: attr(data-ghostlabs-tween-label);
+	}
+
+}
+
+// Thumbnail preview in editor
+.wp-block-ghostlabs-glide.ghostlabs-glide--content-slider {
+
+	.ghostlabs-glide__thumbs__track {
+		display: flex;
+		gap: 4px;
+	}
+
+	.ghostlabs-glide__thumbs__slide {
+		flex: 0 0 calc(100% / 5);
+		min-width: 0;
+	}
+
+	.ghostlabs-glide__thumbs__slide.is-thumb-selected .ghostlabs-glide__thumbs__placeholder {
+		border-color: currentcolor;
+		background: rgba(0, 0, 0, 0.1);
+	}
+
+	&.has-thumbnails--top,
+	&.has-thumbnails--bottom {
+
+		.ghostlabs-glide__thumbs__viewport,
+		.ghostlabs-glide__thumbs__track {
+			max-height: var(--max-height);
+		}
+
+		.ghostlabs-glide__thumbs {
+			max-height: var(--max-height);
+			padding-block-end: 8px;
+		}
+
+		.ghostlabs-glide__thumbs__slide {
+			flex: 1 0 15% !important;
+		}
+
+		.ghostlabs-glide__thumbs__placeholder {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			width: 100%;
+			aspect-ratio: 16 / 9;
+			overflow: hidden;
+			background: rgba(0, 0, 0, 0.05);
+			border: 1px solid rgba(0, 0, 0, 0.1);
+			border-radius: 3px;
+			font-size: 12px;
+			color: rgba(0, 0, 0, 0.3);
+			max-height: var(--max-height);
+
+			img {
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+				object-position: center;
+				display: block;
+			}
+		}
+	}
+
+	// Top: flex column so order: -1 moves thumbs above the slides.
+	// !important overrides WordPress's display on block wrappers.
+	&.has-thumbnails--top {
+		display: flex !important;
+		flex-direction: column;
+
+		.ghostlabs-glide__thumbs {
+			order: -1;
+		}
+	}
+
+	// Left/right: grid layout with inner-blocks in the viewport column
+	&.has-thumbnails--left,
+	&.has-thumbnails--right {
+		display: grid !important;
+		grid-template-columns: auto minmax(0, 1fr);
+
+		> .block-editor-inner-blocks {
+			grid-column: 2;
+			grid-row: 1;
+			overflow: clip;
+		}
+
+		.ghostlabs-glide__thumbs {
+			grid-column: 1;
+			grid-row: 1;
+			width: calc(var(--ghostlabs-glide-slide-height, 60vh) * 0.3);
+			max-width: 200px;
+		}
+
+		.ghostlabs-glide__thumbs__track {
+			flex-direction: column;
+			padding: 0;
+		}
+
+		.ghostlabs-glide__thumbs__slide {
+			flex: 0 0 auto;
+		}
+
+		.ghostlabs-glide__arrow--prev {
+			left: calc(min(var(--ghostlabs-glide-slide-height, 60vh) * 0.3, 200px) + 12px);
+		}
+	}
+
+	&.has-thumbnails--right {
+		grid-template-columns: minmax(0, 1fr) auto;
+
+		> .block-editor-inner-blocks {
+			grid-column: 1;
+			grid-row: 1;
+		}
+
+		.ghostlabs-glide__thumbs {
+			grid-column: 2;
+		}
+
+		.ghostlabs-glide__arrow--prev {
+			left: 12px;
+		}
+
+		.ghostlabs-glide__arrow--next {
+			right: calc(min(var(--ghostlabs-glide-slide-height, 60vh) * 0.3, 200px) + 12px);
+		}
+	}
+}
+
+// -----------------------------------------------------------------------------
+// Sticky Scroll — editor preview
+// -----------------------------------------------------------------------------
+// The mode stylesheet is imported above, so the rail, markers, pane layers and
+// dots all look the same here as they do on the frontend. Only the things the
+// editor genuinely does differently are overridden below.
+// `position: sticky` does not behave in the editor canvas the way it does on
+// the frontend, and the author needs to see every step at once anyway — so the
+// two-column relationship and the step order are what is previewed, not the
+// stuck behaviour.
+
+.wp-block-ghostlabs-glide.ghostlabs-glide--sticky-chapters {
+
+	> .ghostlabs-glide__rail {
+		position: static;
+		user-select: none;
+	}
+
+	> .block-editor-inner-blocks > .block-editor-block-list__layout {
+		display: flex;
+		flex-direction: column;
+		gap: 0;
+
+		// The canvas has no server-rendered .ghostlabs-glide__step wrappers, so
+		// the measure and the chapter rules are mapped onto the slide blocks
+		// themselves. The pseudo-element is guarded against
+		// .has-video-background, which already owns ::before on this element
+		// for the poster preview.
+		> .wp-block-ghostlabs-glide-slide > * {
+			max-width: var(--ghostlabs-glide-measure, 62ch);
+		}
+
+		> .wp-block-ghostlabs-glide-slide + .wp-block-ghostlabs-glide-slide:not(.has-video-background)::before {
+			content: "";
+			display: block;
+			max-width: var(--ghostlabs-glide-measure, 62ch);
+			margin-bottom: 44px;
+			border-top: 1px solid var(--ghostlabs-glide-hairline);
+		}
+	}
+}
+
+// Sticky Media — editor preview.
+// ---
+// Where the pane lives depends on the Media source, so the two-column
+// relationship has to be built in two different places:
+//   - Pinned:   the pane is a real inner block sitting among the steps, so the
+//               grid has to go on WP's inner-block wrapper.
+//   - Per step: nothing among the inner blocks is the pane. edit.js renders a
+//               preview as a sibling of them, so the block keeps the grid it
+//               already has from the mode stylesheet.

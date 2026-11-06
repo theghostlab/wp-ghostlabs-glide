@@ -1,0 +1,56 @@
+// The settings screen's buttons: the Plugins library's `Button / Primary` and
+// `Button / Secondary`, as every sibling's Upsell Page ships them.
+
+.ghostlabs-glide-button {
+	display: inline-flex;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: center;
+	gap: var(--ghostlabs-glide-upsell-space-1);
+	padding: var(--ghostlabs-glide-upsell-space-2-5) var(--ghostlabs-glide-upsell-space-5);
+	border: 0;
+	border-radius: var(--ghostlabs-glide-upsell-radius-button);
+	font-size: var(--ghostlabs-glide-upsell-text-sm);
+	font-weight: 600;
+	line-height: var(--ghostlabs-glide-upsell-leading-snug);
+	text-decoration: none;
+	cursor: pointer;
+	transition:
+		background-color var(--ghostlabs-glide-upsell-duration),
+		color var(--ghostlabs-glide-upsell-duration);
+
+	&:focus-visible {
+		outline: var(--ghostlabs-glide-upsell-ring) solid var(--ghostlabs-glide-upsell-primary-400);
+		outline-offset: var(--ghostlabs-glide-upsell-ring);
+	}
+}
+
+.ghostlabs-glide-button--primary {
+	background: var(--ghostlabs-glide-upsell-primary-500);
+	color: var(--ghostlabs-glide-upsell-surface);
+
+	&:is(:hover, :focus) {
+		background: var(--ghostlabs-glide-upsell-primary-400);
+		color: var(--ghostlabs-glide-upsell-surface);
+	}
+}
+
+// The owner strip's label, beside its heading. It is not a control of its
+// own: the `<summary>` around it is, so this only looks like one, and it
+// answers a hover anywhere on that row.
+.ghostlabs-glide-button--secondary {
+	padding: var(--ghostlabs-glide-upsell-space-2) var(--ghostlabs-glide-upsell-space-5);
+	border: var(--ghostlabs-glide-upsell-ring) solid var(--ghostlabs-glide-upsell-primary-400);
+	border-radius: var(--ghostlabs-glide-upsell-radius-pill);
+	background: transparent;
+	color: var(--ghostlabs-glide-upsell-primary-500);
+
+	.ghostlabs-glide-handoff__summary:hover & {
+		background: oklch(from var(--ghostlabs-glide-upsell-primary-25) l c h / var(--ghostlabs-glide-upsell-hover-wash));
+	}
+}
+
+.ghostlabs-glide-button--large {
+	padding: var(--ghostlabs-glide-upsell-space-3) var(--ghostlabs-glide-upsell-space-6);
+	font-size: var(--ghostlabs-glide-upsell-text-base);
+}

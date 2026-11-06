@@ -1,0 +1,19 @@
+@use "../../blocks/glide/base";
+@use "style";
+
+// The mode's own stylesheet: the base, the tokens and Sticky Chapters. Any
+// other layout an edition ships is a stylesheet of its own, built from
+// `modes/sticky-scroll/layouts/<layout>/` and enqueued only on a page that
+// renders it — see `ModeStyleLoader::enqueueLayout()`.
+// ---
+// 🔴 **Those load after this one, and that order is load-bearing.** A layout
+// overrides rules the base sets at the same specificity —
+// `.ghostlabs-glide--stacking-cards .ghostlabs-glide__step { min-height: … }`
+// against the base's `min-height: 60vh`, both (0,2,0) — so source order is what
+// decides. When the order was once reversed the cards became short enough that
+// scrolling never buried one, and the only sign was an E2E assertion reading 0
+// from a custom property. The layout's handle depends on this one's, which is
+// what puts it second.
+// ---
+// Custom properties genuinely are order-independent, which is what made the
+// mistake plausible. Regular declarations are not.

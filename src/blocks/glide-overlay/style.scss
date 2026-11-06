@@ -1,0 +1,13 @@
+.ghostlabs-glide-overlay {
+	position: absolute;
+	inset: 0;
+	z-index: 3;
+	display: flex;
+	pointer-events: none;
+}
+
+.ghostlabs-glide-overlay__content {
+	pointer-events: auto;
+	width: 100%;
+	max-width: none;
+}

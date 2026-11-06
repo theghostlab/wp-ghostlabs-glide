@@ -1,0 +1,146 @@
+// The comparison card: `Render\ComparisonTable` and its foot.
+
+@use "tokens";
+
+.ghostlabs-glide-compare {
+	position: relative;
+	overflow: hidden;
+	// A size container, so the table can give up its fixed columns where the
+	// card is narrow (see the query below the edition columns).
+	container-type: inline-size;
+	border: var(--ghostlabs-glide-upsell-hairline) solid var(--ghostlabs-glide-upsell-border);
+	border-radius: var(--ghostlabs-glide-upsell-radius-card);
+	background: var(--ghostlabs-glide-upsell-surface);
+	box-shadow: var(--ghostlabs-glide-upsell-shadow-card);
+}
+
+.ghostlabs-glide-compare__table {
+	inline-size: 100%;
+	border-collapse: collapse;
+	text-align: start;
+
+	thead tr {
+		background: var(--ghostlabs-glide-upsell-subtle);
+	}
+
+	tbody tr {
+		border-block-start: var(--ghostlabs-glide-upsell-hairline) solid var(--ghostlabs-glide-upsell-rule);
+	}
+
+	th,
+	td {
+		padding: var(--ghostlabs-glide-upsell-space-4);
+		vertical-align: middle;
+	}
+
+	tbody th {
+		padding-inline-start: var(--ghostlabs-glide-upsell-space-8);
+		font-size: var(--ghostlabs-glide-upsell-text-sm);
+		font-weight: 400;
+		text-align: start;
+		color: var(--ghostlabs-glide-upsell-text);
+	}
+}
+
+.ghostlabs-glide-compare__feature {
+	padding-inline-start: var(--ghostlabs-glide-upsell-space-8);
+}
+
+// The edition columns. `inline-size` on the header sets the column.
+.ghostlabs-glide-compare__free,
+.ghostlabs-glide-compare__paid {
+	inline-size: var(--ghostlabs-glide-upsell-compare-column);
+	text-align: center;
+	font-size: var(--ghostlabs-glide-upsell-text-sm);
+}
+
+.ghostlabs-glide-compare__free {
+	color: var(--ghostlabs-glide-upsell-muted);
+}
+
+.ghostlabs-glide-compare__paid {
+	font-weight: 600;
+	color: var(--ghostlabs-glide-upsell-primary-500);
+}
+
+thead .ghostlabs-glide-compare__free,
+thead .ghostlabs-glide-compare__paid {
+	font-size: var(--ghostlabs-glide-upsell-text-lg);
+	font-weight: 600;
+}
+
+// ⚠️ WCAG 1.4.10. Two fixed edition columns plus padding need about 30rem,
+// and the card is `overflow: hidden`, so at 320 CSS pixels the paid column
+// was cut off rather than reflowed (a sibling's audit). Below the narrow
+// width the columns size to their content and the padding tightens; the table
+// then fits the card down to 320.
+@container (max-width: #{tokens.$narrow}) {
+
+	.ghostlabs-glide-compare__table {
+
+		th,
+		td {
+			padding: var(--ghostlabs-glide-upsell-space-2);
+		}
+
+		tbody th {
+			padding-inline-start: var(--ghostlabs-glide-upsell-space-4);
+		}
+	}
+
+	.ghostlabs-glide-compare__feature {
+		padding-inline-start: var(--ghostlabs-glide-upsell-space-4);
+	}
+
+	.ghostlabs-glide-compare__free,
+	.ghostlabs-glide-compare__paid {
+		inline-size: auto;
+	}
+
+	thead .ghostlabs-glide-compare__free,
+	thead .ghostlabs-glide-compare__paid {
+		font-size: var(--ghostlabs-glide-upsell-text-sm);
+	}
+}
+
+// The marks inherit their cell's colour, so the free column's are `--…-muted`
+// (4.83:1) and the paid column's are purple. ⚠️ Never lighter: they are
+// graphical objects that need 3:1, and axe cannot measure an SVG fill. The
+// E2E spec does.
+.ghostlabs-glide-compare__mark {
+	display: block;
+	inline-size: var(--ghostlabs-glide-upsell-mark);
+	block-size: var(--ghostlabs-glide-upsell-mark);
+	margin-inline: auto;
+}
+
+.ghostlabs-glide-compare__mark--muted {
+	color: var(--ghostlabs-glide-upsell-muted);
+}
+
+.ghostlabs-glide-compare__foot {
+	display: flex;
+	// ⚠️ Wraps, or at a phone's width the note is squeezed to one word per
+	// line beside the button (seen at 375px in a sibling). The note claims
+	// the row first; the button drops below it.
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--ghostlabs-glide-upsell-space-4) var(--ghostlabs-glide-upsell-space-6);
+	padding: var(--ghostlabs-glide-upsell-space-5) var(--ghostlabs-glide-upsell-space-8);
+	border-block-start: var(--ghostlabs-glide-upsell-hairline) solid var(--ghostlabs-glide-upsell-rule);
+	background: var(--ghostlabs-glide-upsell-subtle);
+}
+
+.ghostlabs-glide-compare__note {
+	flex: 1 1 var(--ghostlabs-glide-upsell-compare-note);
+}
+
+.ghostlabs-glide-upgrade .ghostlabs-glide-compare__note-title {
+	font-weight: 600;
+	color: var(--ghostlabs-glide-upsell-ink);
+}
+
+.ghostlabs-glide-compare__note-title + p {
+	margin-block-start: var(--ghostlabs-glide-upsell-space-1);
+}

@@ -1,0 +1,19 @@
+// The content slider's tween effects, as this edition ships them: none.
+// ---
+// The stylesheet half of `@edition/tweens.js`, which answers the same way. This
+// edition compiles no tween modules, so there is no animation to lay markup out
+// for — the slider transitions plainly, which is what a slider with no tween
+// does.
+// ---
+// ⚠️ **Empty, and it still has to exist.** `@use` is resolved at compile time
+// and Sass has no conditional form of it, so a shared stylesheet asking for a
+// partial one edition lacks does not degrade — the build fails outright. Same
+// reason as the trait in `inc/Service/EditionRenderers.php`, and the same
+// reason this directory's other partials exist while holding almost nothing.
+// ---
+// The class hooks are still emitted: `Glide::renderContentSlider()` stamps
+// `is-tween-parallax` and friends from attributes that are in every edition's
+// `block.json` schema, so a block pasted from an edition that has the effects
+// keeps its markup and simply sits still. Nothing here styles it, which is the
+// correct outcome — a layer sized for an animation that never runs looks
+// broken, where an unstyled one just looks like a slide.

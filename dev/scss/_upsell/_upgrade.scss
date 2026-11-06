@@ -1,0 +1,46 @@
+// The screen's column and its two quiet cards: where your settings live, and
+// the way in for somebody who already bought.
+
+.ghostlabs-glide-upgrade {
+	display: flex;
+	flex-direction: column;
+	gap: var(--ghostlabs-glide-upsell-space-2);
+	max-inline-size: var(--ghostlabs-glide-upsell-content-max);
+	margin-block: var(--ghostlabs-glide-upsell-space-6) var(--ghostlabs-glide-upsell-space-12);
+	color: var(--ghostlabs-glide-upsell-muted);
+	font-size: var(--ghostlabs-glide-upsell-text-sm);
+
+	// ⚠️ Core sets `p { font-size: 13px; margin: 1em 0 }` on every admin
+	// paragraph; inside this column every paragraph's rhythm is the card's.
+	p {
+		margin: 0;
+		font-size: inherit;
+		line-height: var(--ghostlabs-glide-upsell-leading-body);
+	}
+}
+
+.ghostlabs-glide-upgrade__card,
+.ghostlabs-glide-upgrade__strip {
+	padding: var(--ghostlabs-glide-upsell-space-6) var(--ghostlabs-glide-upsell-space-7);
+	border: var(--ghostlabs-glide-upsell-hairline) solid var(--ghostlabs-glide-upsell-border);
+	border-radius: var(--ghostlabs-glide-upsell-radius-card);
+	background: var(--ghostlabs-glide-upsell-surface);
+}
+
+.ghostlabs-glide-upgrade__strip {
+	padding-block: var(--ghostlabs-glide-upsell-space-4-5);
+}
+
+// Two classes: core's `.wrap h2` would otherwise set its own size and
+// margins.
+.ghostlabs-glide-upgrade .ghostlabs-glide-upgrade__card-title {
+	margin: 0 0 var(--ghostlabs-glide-upsell-space-2);
+	font-size: var(--ghostlabs-glide-upsell-text-base);
+	font-weight: 600;
+	line-height: var(--ghostlabs-glide-upsell-leading-snug);
+	color: var(--ghostlabs-glide-upsell-ink);
+}
+
+.ghostlabs-glide-upgrade__card p + p {
+	margin-block-start: var(--ghostlabs-glide-upsell-space-4-5);
+}

@@ -1,0 +1,17 @@
+.ghostlabs-glide-overlay {
+	background: transparent !important;
+	outline: 2px dashed rgba(255, 255, 255, 0.4);
+	outline-offset: -2px;
+	border-radius: 2px;
+	min-height: 80px;
+
+	// Force every editor wrapper layer inside the overlay transparent
+	// so slides behind the grid-stacked overlay remain visible.
+	&,
+	.ghostlabs-glide-overlay__content,
+	.block-editor-inner-blocks,
+	.block-editor-block-list__layout,
+	.wp-block-cover {
+		background: transparent !important;
+	}
+}

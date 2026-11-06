@@ -1,0 +1,5 @@
+// Glide - Frontend base styles (loaded on every page with the block)
+// Mode-specific styles are split into separate files and conditionally
+// enqueued by ModeStyleLoader based on the active mode.
+
+@use "base";

@@ -1,0 +1,13 @@
+// The mode stylesheets this edition ships, for the editor's preview.
+// ---
+// Two of the four the block's attribute allows; the others are not
+// compiled into this tree. Sass fails hard on a missing @use, which is
+// why the shared editor stylesheet asks the edition rather than naming
+// all four itself.
+@forward "@shared/modes/content-slider/style";
+@forward "@shared/modes/sticky-scroll/style";
+
+// After the shared sticky styles, for the reason
+// `sticky-scroll/frontend.scss` gives: these override base rules at
+// equal specificity, so source order decides.
+@forward "./sticky-patterns";

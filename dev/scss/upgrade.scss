@@ -1,0 +1,25 @@
+// Settings → Glide, free edition: the Upsell Page (Penpot → WordPress >
+// Plugins → F3; Penpot → Glide → Upsell surfaces · Design, boards 5 and 5b).
+
+// Organized as tokens, then components. There is no reset and no element
+// layer: this is a wp-admin screen, and core owns both.
+
+// ⚠️ Only the tokens are layered. Core's admin styles are unlayered, and an
+// unlayered rule beats a layered one before specificity is even consulted.
+// Specificity stays minimal instead: one class, or two where a core rule
+// would otherwise overrule it, with a comment saying so.
+
+// ⚠️ Compiled, and the output is tracked: `pnpm run build` (or `build:css`)
+// writes `assets/css/upgrade.css` for a development build, and `build.sh
+// --dist` compiles it again in place from the sources it ships.
+// `tests/tooling/upgrade-stylesheet.test.js` fails when the tracked file is
+// not a compile of these. Enqueued by `Service\UpgradePage::scripts()` on
+// this screen only, which is what scopes it.
+
+@use "_upsell/tokens";
+@use "_upsell/screen";
+@use "_upsell/button";
+@use "_upsell/upgrade";
+@use "_upsell/handoff";
+@use "_upsell/hero";
+@use "_upsell/compare";

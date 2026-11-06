@@ -1,0 +1,77 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "ghostlabs/glide",
+  "version": "1.0.4",
+  "title": "Glide",
+  "category": "design",
+  "icon": "slides",
+  "description": "Scrollytelling and a content slider, built from blocks.",
+  "keywords": [
+    "slider",
+    "carousel",
+    "slideshow",
+    "scrollytelling"
+  ],
+  "example": {},
+  "attributes": {
+    "mode": {
+      "type": "string",
+      "default": "contentSlider"
+    },
+    "regionLabel": {
+      "type": "string",
+      "default": ""
+    },
+    "contentSlider": {
+      "type": "object",
+      "default": {
+        "loop": true,
+        "autoplay": false,
+        "autoplayInterval": 5000,
+        "showArrows": true,
+        "slidesPerView": 1,
+        "gap": 0,
+        "speed": 6,
+        "dragFree": false,
+        "fade": false,
+        "navigation": "dots",
+        "height": "60vh",
+        "heightAuto": false,
+        "useResponsiveHeight": false,
+        "heightDesktop": 600,
+        "heightTablet": 450,
+        "heightMobile": 300,
+        "fit": "cover",
+        "verticalAlign": "center",
+        "showThumbnails": false,
+        "thumbnailPosition": "bottom",
+        "autoHideControls": false
+      }
+    },
+    "stickyScroll": {
+      "type": "object",
+      "default": {
+        "stickyOffset": 40,
+        "railPosition": "left",
+        "railWidth": 240,
+        "markerStyle": "numbered",
+        "showProgressLine": true,
+        "showStepCounter": false,
+        "smoothScroll": true
+      }
+    }
+  },
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ]
+  },
+  "textdomain": "ghostlabs-glide",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "render": "file:./render.php",
+  "viewScript": "file:./view.js"
+}
